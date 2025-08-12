@@ -881,22 +881,38 @@ export default function BookingPage() {
                       </div>
 
                       <div className="grid grid-cols-2 gap-2">
-                        {getAvailableTimeSlots(bookingData.date).map((slot) => (
-                          <button
-                            key={slot.value}
-                            onClick={() => {
-                              handleInputChange("startTime", slot.value);
-                              setShowTimePicker(false);
-                            }}
-                            className={`py-2 px-3 text-sm border rounded-md transition-colors ${
-                              bookingData.startTime === slot.value
-                                ? "border-green-500 bg-green-50 text-green-600"
-                                : "border-gray-300 hover:border-gray-400"
-                            }`}
-                          >
-                            {slot.display}
-                          </button>
-                        ))}
+                        {timeSlots.map((slot) => {
+                          const isAvailable = getAvailableTimeSlots(
+                            bookingData.date
+                          ).some(
+                            (availableSlot) =>
+                              availableSlot.value === slot.value
+                          );
+                          const isSelected =
+                            bookingData.startTime === slot.value;
+
+                          return (
+                            <button
+                              key={slot.value}
+                              onClick={() => {
+                                if (isAvailable) {
+                                  handleInputChange("startTime", slot.value);
+                                  setShowTimePicker(false);
+                                }
+                              }}
+                              disabled={!isAvailable}
+                              className={`py-2 px-3 text-sm font-medium border rounded-md transition-colors ${
+                                isSelected
+                                  ? "border-green-500 bg-green-50 text-green-600"
+                                  : isAvailable
+                                  ? "border-gray-300 hover:border-gray-400 text-gray-800 hover:text-gray-900 cursor-pointer"
+                                  : "border-gray-200 bg-gray-50 text-gray-600 cursor-not-allowed opacity-75"
+                              }`}
+                            >
+                              {slot.display}
+                            </button>
+                          );
+                        })}
                       </div>
 
                       {/* Show booked and blocked slots */}
